@@ -9,7 +9,11 @@ class subinfo(info.infoclass):
     def setDependencies(self):
         self.description = "ruby support for kdevelop"
         self.runtimeDependencies["virtual/base"] = "default"
-        self.buildDependencies["dev-util/winflexbison"] = "default"
+        if OsUtils.isWin():
+            self.buildDependencies["dev-util/winflexbison"] = "default"
+        else:
+            self.buildDependencies["autotools/flex"] = "default"
+            self.buildDependencies["autotools/bison"] = "default"
         self.runtimeDependencies["extragear/kdevelop/kdevelop"] = "default"
 
 

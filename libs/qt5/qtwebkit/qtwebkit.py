@@ -42,7 +42,11 @@ class subinfo(info.infoclass):
         self.runtimeDependencies["libs/qt5/qtwebchannel"] = "default"
         self.runtimeDependencies["libs/qt5/qtsensors"] = "default"
         self.buildDependencies["dev-util/ruby"] = "default"
-        self.buildDependencies["dev-util/winflexbison"] = "default"
+        if OsUtils.isWin():
+            self.buildDependencies["dev-util/winflexbison"] = "default"
+        else:
+            self.buildDependencies["autotools/flex"] = "default"
+            self.buildDependencies["autotools/bison"] = "default"
         self.buildDependencies["gnuwin32/gperf"] = "default"
 
 

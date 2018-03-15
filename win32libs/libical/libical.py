@@ -19,7 +19,11 @@ class subinfo(info.infoclass):
 
     def setDependencies(self):
         self.runtimeDependencies["virtual/base"] = "default"
-        self.buildDependencies["dev-util/winflexbison"] = "default"
+        if OsUtils.isWin():
+            self.buildDependencies["dev-util/winflexbison"] = "default"
+        else:
+            self.buildDependencies["autotools/flex"] = "default"
+            self.buildDependencies["autotools/bison"] = "default"
         self.runtimeDependencies["libs/qt5/qtbase"] = "default"
         self.runtimeDependencies["win32libs/icu"] = "default"
 

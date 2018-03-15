@@ -9,7 +9,11 @@ class subinfo(info.infoclass):
         self.runtimeDependencies["virtual/base"] = "default"
         self.buildDependencies["dev-util/png2ico"] = "default"
         # needed for many kf5's
-        self.buildDependencies["dev-util/winflexbison"] = "default"
+        if OsUtils.isWin():
+            self.buildDependencies["dev-util/winflexbison"] = "default"
+        else:
+            self.buildDependencies["autotools/flex"] = "default"
+            self.buildDependencies["autotools/bison"] = "default"
         self.buildDependencies["libs/qt5/qttools"] = "default"
 
         if CraftCore.settings.getboolean("CMake", "KDE_L10N_AUTO_TRANSLATIONS", False):
