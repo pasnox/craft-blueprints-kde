@@ -27,7 +27,7 @@ diff -Nrub -x '*~' -x '*.rej' -x sqlite-amalgamation-3150000.orig -x'*.o' sqlite
 +option(ENABLE_UNLOCK_NOTIFY "ENABLE_UNLOCK_NOTIFY" ON)
 +
 +if (ENABLE_UNLOCK_NOTIFY)
-+    add_definitions(-DSQLITE_ENABLE_UNLOCK_NOTIFY)
++    add_definitions(-DSQLITE_ENABLE_UNLOCK_NOTIFY=1)
 +endif()
 +
 +find_package( Threads )
