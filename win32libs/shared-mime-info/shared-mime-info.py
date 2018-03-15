@@ -42,6 +42,8 @@ class subinfo(info.infoclass):
 
     def setDependencies(self):
         self.buildDependencies["dev-util/msys"] = "default"
+        if OsUtils.isMac():
+            self.buildDependencies["autotools/pkg-config"] = "default"
         self.buildDependencies["dev-util/intltool"] = "default"
         self.runtimeDependencies["virtual/base"] = "default"
         self.runtimeDependencies["win32libs/gettext"] = "default"
@@ -55,19 +57,23 @@ class subinfo(info.infoclass):
 class Package(AutoToolsPackageBase):
     def __init__(self, **args):
         AutoToolsPackageBase.__init__(self)
-        root = self.shell.toNativePath(CraftCore.standardDirs.craftRoot())
+
+
+    def configure(self):
         self.subinfo.options.configure.args += f" --disable-default-make-check --disable-update-mimedb"
-        self.subinfo.options.configure.cflags = f"-I{root}/include/glib-2.0 -I{root}/include/libxml2"
         if CraftCore.compiler.isMSVC():
-            self.subinfo.options.configure.cflags += f" -I{root}/include/msvc"
+            root = self.shell.toNativePath(CraftCore.standardDirs.craftRoot())
             self.shell.useMSVCCompatEnv = True
             self.platform = ""
             self.subinfo.options.configure.args += f" PKG_CONFIG=':' "
-            self.subinfo.options.configure.ldflags ="-lglib-2.0 -lgobject-2.0 -lgio-2.0 -lgthread-2.0 -llibxml2 -lintl -lzlib"
+            self.subinfo.options.configure.cflags += f" -I{root}/include/msvc"
+            self.subinfo.options.configure.ldflags = "-lglib-2.0 -lgobject-2.0 -lgio-2.0 -lgthread-2.0 -llibxml2 -lintl -lzlib"
             if self.buildType() == "Debug":
                 self.subinfo.options.configure.ldflags += " -lkdewind"
             else:
                 self.subinfo.options.configure.ldflags += " -lkdewin"
+        return AutoToolsPackageBase.configure(self)
+
 
     def install(self):
         if not super().install():
