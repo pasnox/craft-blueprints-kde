@@ -1,0 +1,21 @@
+Binary files akonadi-17.12.3.orig/.DS_Store and akonadi-17.12.3/.DS_Store differ
+Binary files akonadi-17.12.3.orig/src/.DS_Store and akonadi-17.12.3/src/.DS_Store differ
+diff -Nrub -x '*~' -x '*\.rej' -x '*\.orig' -x'*\.o' -x '*\.pyc' akonadi-17.12.3.orig/src/agentserver/CMakeLists.txt akonadi-17.12.3/src/agentserver/CMakeLists.txt
+--- akonadi-17.12.3.orig/src/agentserver/CMakeLists.txt	2018-03-05 11:14:26.000000000 +0100
++++ akonadi-17.12.3/src/agentserver/CMakeLists.txt	2018-03-19 14:40:46.000000000 +0100
+@@ -50,4 +50,4 @@
+ endif()
+ 
+ install(TARGETS akonadi_agent_server
+-        ${KF5_INSTALL_TARGETS_DEFAULT_ARGS}})
++        ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
+diff -Nrub -x '*~' -x '*\.rej' -x '*\.orig' -x'*\.o' -x '*\.pyc' akonadi-17.12.3.orig/src/akonadictl/CMakeLists.txt akonadi-17.12.3/src/akonadictl/CMakeLists.txt
+--- akonadi-17.12.3.orig/src/akonadictl/CMakeLists.txt	2018-03-05 11:14:26.000000000 +0100
++++ akonadi-17.12.3/src/akonadictl/CMakeLists.txt	2018-03-19 14:40:36.000000000 +0100
+@@ -25,5 +25,5 @@
+ )
+ 
+ install(TARGETS akonadictl
+-        ${KF5_INSTALL_TARGETS_DEFAULT_ARGS}}
++        ${KF5_INSTALL_TARGETS_DEFAULT_ARGS}
+ )

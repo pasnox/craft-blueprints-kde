@@ -14,6 +14,7 @@ class subinfo(info.infoclass):
                                         ("akonadi-17.08.3-20171204-2.diff", 1)]
         self.patchToApply["17.12.0"] = [("akonadi-17.12.0-20171220.diff", 1),
                                         ("0001-Win-Create-local-socket-named-pipes-based-on-the-ins.patch", 1)]
+        self.patchToApply["17.12.3"] = [("akonadi-17.12.3-20180319.diff", 1)]
 
         self.description = "A storage service for PIM data and meta data"
 
