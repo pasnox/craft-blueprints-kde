@@ -1,0 +1,82 @@
+diff -Nrub -x '*~' -x '*\.rej' -x '*\.orig' -x'*\.o' -x '*\.pyc' dbus-1.11.14.orig/cmake/CMakeLists.txt dbus-1.11.14/cmake/CMakeLists.txt
+--- dbus-1.11.14.orig/cmake/CMakeLists.txt	2018-03-20 15:50:24.000000000 +0100
++++ dbus-1.11.14/cmake/CMakeLists.txt	2018-03-20 15:37:34.000000000 +0100
+@@ -18,6 +18,7 @@
+         cmake_policy(SET CMP0053 NEW)
+         cmake_policy(SET CMP0054 NEW)
+     endif()
++    cmake_policy(SET CMP0042 NEW)
+ endif()
+ 
+ # detect version
+@@ -392,6 +393,14 @@
+   option (DBUS_BUILD_X11 "Build with X11 autolaunch support " ON)
+ endif(X11_FOUND)
+ 
++if(APPLE)
++  option (DBUS_BUILD_LAUNCHD "Build with launchd support " ON)
++  set(LAUNCHD_AGENT_DIR "/Library/LaunchAgents")
++  if(NOT LAUNCHD_AGENT_DIR_OVERRIDE STREQUAL "")
++    set(LAUNCHD_AGENT_DIR ${LAUNCHD_AGENT_DIR_OVERRIDE})
++  endif()
++endif()
++
+ # test binary names
+ if (WIN32)
+     # follow Automake's naming convention so we can share .in files
+@@ -464,6 +473,9 @@
+   set (DBUS_SESSION_BUS_LISTEN_ADDRESS "unix:tmpdir=${DBUS_SESSION_SOCKET_DIR}" CACHE STRING "session bus default listening address")
+   set (DBUS_SESSION_BUS_CONNECT_ADDRESS "autolaunch:" CACHE STRING "session bus fallback address for clients")
+   set (sysconfdir "")
++  if (APPLE)
++    set (sysconfdir "${CMAKE_INSTALL_DATADIR}")
++  endif(APPLE)
+   set (configdir ${sysconfdir}/dbus-1 )
+   set (DBUS_SYSTEM_CONFIG_FILE  ${configdir}/system.conf)
+   set (DBUS_SESSION_CONFIG_FILE ${configdir}/session.conf)
+diff -Nrub -x '*~' -x '*\.rej' -x '*\.orig' -x'*\.o' -x '*\.pyc' dbus-1.11.14.orig/cmake/bus/CMakeLists.txt dbus-1.11.14/cmake/bus/CMakeLists.txt
+--- dbus-1.11.14.orig/cmake/bus/CMakeLists.txt	2018-03-20 15:50:24.000000000 +0100
++++ dbus-1.11.14/cmake/bus/CMakeLists.txt	2018-03-20 15:37:34.000000000 +0100
+@@ -121,6 +121,11 @@
+ 	install(TARGETS dbus-service ${INSTALL_TARGETS_DEFAULT_ARGS})
+ endif (DBUS_SERVICE)
+ 
++if(APPLE AND DBUS_BUILD_LAUNCHD)
++    configure_file(${BUS_DIR}/org.freedesktop.dbus-session.plist.in ${CMAKE_CURRENT_BINARY_DIR}/org.freedesktop.dbus-session.plist)
++    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.freedesktop.dbus-session.plist DESTINATION ${LAUNCHD_AGENT_DIR})
++endif(APPLE AND DBUS_BUILD_LAUNCHD)
++
+ set(LAUNCH_HELPER_SOURCES
+     ${BUS_DIR}/config-loader-expat.c
+     ${BUS_DIR}/config-parser-common.c
+diff -Nrub -x '*~' -x '*\.rej' -x '*\.orig' -x'*\.o' -x '*\.pyc' dbus-1.11.14.orig/cmake/config.h.cmake dbus-1.11.14/cmake/config.h.cmake
+--- dbus-1.11.14.orig/cmake/config.h.cmake	2017-04-18 14:12:31.000000000 +0200
++++ dbus-1.11.14/cmake/config.h.cmake	2018-03-20 15:37:34.000000000 +0100
+@@ -62,6 +62,13 @@
+ #undef DBUS_PATH_OR_ABSTRACT_VALUE
+ #endif
+ 
++/* apple */
++#cmakedefine DBUS_BUILD_LAUNCHD 1
++#ifdef DBUS_BUILD_LAUNCHD
++# define DBUS_ENABLE_LAUNCHD 1
++#cmakedefine LAUNCHD_AGENT_DIR "@LAUNCHD_AGENT_DIR@"
++#endif
++
+ /* selinux */
+ /* kqueue */
+ #cmakedefine HAVE_CONSOLE_OWNER_FILE 1
+diff -Nrub -x '*~' -x '*\.rej' -x '*\.orig' -x'*\.o' -x '*\.pyc' dbus-1.11.14.orig/cmake/dbus/CMakeLists.txt dbus-1.11.14/cmake/dbus/CMakeLists.txt
+--- dbus-1.11.14.orig/cmake/dbus/CMakeLists.txt	2017-02-14 09:50:16.000000000 +0100
++++ dbus-1.11.14/cmake/dbus/CMakeLists.txt	2018-03-20 15:37:34.000000000 +0100
+@@ -229,6 +229,10 @@
+ 		${DBUS_DIR}/dbus-userdb-util.c
+ 		${DBUS_DIR}/dbus-sysdeps-util-unix.c
+ 	)
++    if (APPLE AND DBUS_BUILD_LAUNCHD)
++        list(APPEND DBUS_SHARED_SOURCES ${DBUS_DIR}/dbus-server-launchd.c)
++        list(APPEND DBUS_SHARED_HEADERS ${DBUS_DIR}/dbus-server-launchd.h)
++    endif(APPLE AND DBUS_BUILD_LAUNCHD)
+ endif (WIN32)
+ 
+ set(libdbus_SOURCES

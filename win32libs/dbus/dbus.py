@@ -40,7 +40,8 @@ class subinfo(info.infoclass):
         self.patchToApply["1.10.4"] = [("dont_include_afxres.diff", 1)]
         self.patchToApply["1.11.4"] = [("dbus-1.11.4-20160903.diff", 1)]
         self.patchToApply["1.11.14"] = [("dbus-1.11.4-20160903.diff", 1),
-                                        ("dbus-fix_data_dir.diff", 1)]
+                                        ("dbus-fix_data_dir.diff", 1),
+                                        ("macos-launchd.diff", 1)]
         self.patchLevel["1.11.14"] = 2
 
         self.targetDigests["1.10.4"] = "ec1921a09199c81ea20b20448237146a414d51ae"
@@ -88,7 +89,10 @@ class Package(CMakePackageBase):
                 "-DDBUS_SYSTEM_BUS_DEFAULT_ADDRESS:STRING=autolaunch:scope=*install-path ")
 
         if OsUtils.isMac():
+            root = CraftCore.standardDirs.craftRoot()
             self.subinfo.options.configure.args += "-DDBUS_BUILD_X11:BOOL=OFF "
+            self.subinfo.options.configure.args += "-DDBUS_BUILD_LAUNCHD:BOOL=ON "
+            self.subinfo.options.configure.args += f"-DLAUNCHD_AGENT_DIR_OVERRIDE:STRING={root}/Library/LaunchAgents "
 
     def install(self):
         if not CMakePackageBase.install(self): return False
